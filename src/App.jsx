@@ -1,35 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import * as petService from "./services/petService.js";
+import PetList from "./components/petList/PetList.jsx";
+import PetDetail from "./components/PetDetail/PetDetail";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [pets, setPets] = useState([]);
+  const [selected, setSelected] = useState(null);
+
+    const handleSelect = (pet) => {
+      setSelected(pet);
+    };
+
+  useEffect(() => {
+    const fetchPets = async () => {
+      try {
+        const fetchedPets = await petService.index();
+        if (fetchedPets.err) {
+          throw new Error(fetchedPets.err);
+        }
+        setPets(fetchedPets);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchPets();
+  }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>hello</h1>
+      <PetList pets={pets} handleSelect={handleSelect} />
+      <PetDetail selected={selected} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
